@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 
 class SignupSchema(BaseModel):
     full_name: str
@@ -27,8 +28,8 @@ class UserResponse(BaseModel):
 
 
 class UpdateProfileSchema(BaseModel):
-    full_name: str = Field(min_length=3)
-    email: EmailStr
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
 
 class ChangePasswordSchema(BaseModel):
     old_password: str

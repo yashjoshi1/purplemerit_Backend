@@ -80,21 +80,39 @@ def update_my_profile(
     data: UpdateProfileSchema,
     current_user=Depends(get_current_user)
 ):
-    existing_user = users_collection.find_one({"email": data.email})
+    update_fields = {}
 
-    if existing_user and existing_user["email"] != current_user["email"]:
-        raise HTTPException(status_code=400, detail="Email already in use")
+    # Update full name if provided
+    if data.full_name:
+        update_fields["full_name"] = data.full_name
+
+    # Update email if provided
+    if data.email:
+        existing_user = users_collection.find_one({"email": data.email})
+        if existing_user and existing_user["email"] != current_user["email"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already in use"
+            )
+        update_fields["email"] = data.email
+
+    if not update_fields:
+        raise HTTPException(
+            status_code=400,
+            detail="No fields provided for update"
+        )
 
     users_collection.update_one(
         {"email": current_user["email"]},
-        {"$set": {
-            "full_name": data.full_name,
-            "email": data.email
-        }}
+        {"$set": update_fields}
     )
 
-    user = users_collection.find_one({"email": data.email})
+    user = users_collection.find_one(
+        {"email": update_fields.get("email", current_user["email"])}
+    )
+
     return serialize_user(user)
+
 
 
 @router.put("/me/change-password")
