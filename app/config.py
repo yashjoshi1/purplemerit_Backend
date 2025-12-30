@@ -1,0 +1,19 @@
+import os
+from dotenv import load_dotenv
+
+# Load .env from project root
+load_dotenv()
+
+class Settings:
+    # MongoDB
+    MONGO_URI = os.getenv("MONGO_URI")
+    DATABASE_NAME = os.getenv("DATABASE_NAME")
+
+    # JWT
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(
+        os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60)
+    )
+
+settings = Settings()
